@@ -64,4 +64,10 @@
 ;;   :resource-base (s-url "http://webcat.tmp.tenforce.com/themes/")
 ;;   :on-path "themes")
 
+(define-resource test ()
+  :class (s-prefix "ext:Test")
+  :properties `((:name :title, (s-prefix "dct:title")))
+  :resource-base (s-url "http://localhost/")
+  :on-path "test"
+  )
 ;;

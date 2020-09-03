@@ -3,14 +3,14 @@ defmodule Dispatcher do
 
   def start(_argv) do
     port = 80
-    IO.puts "Starting Plug with Cowboy on port #{port}"
-    Plug.Adapters.Cowboy.http __MODULE__, [], port: port
+    IO.puts("Starting Plug with Cowboy on port #{port}")
+    Plug.Adapters.Cowboy.http(__MODULE__, [], port: port)
     :timer.sleep(:infinity)
   end
 
-  plug Plug.Logger
-  plug :match
-  plug :dispatch
+  plug(Plug.Logger)
+  plug(:match)
+  plug(:dispatch)
 
   # In order to forward the 'themes' resource to the
   # resource service, use the following forward rule.
@@ -22,8 +22,7 @@ defmodule Dispatcher do
   #   Proxy.forward conn, path, "http://resource/themes/"
   # end
 
-  match _ do
-    send_resp( conn, 404, "Route not found.  See config/dispatcher.ex" )
+  match "/test/*path" do
+    Proxy.forward(conn, path, "http://resource/test/")
   end
-
 end
