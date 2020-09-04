@@ -63,11 +63,30 @@
 ;;                        :as "datasets"))
 ;;   :resource-base (s-url "http://webcat.tmp.tenforce.com/themes/")
 ;;   :on-path "themes")
-
-(define-resource person ()
-  :class (s-prefix "foaf:Person")
-  :properties `((:name :string, (s-prefix "foaf:firstName")))
+(define-resource entity ()
+  :class (s-prefix "gr:BusinessEntity")
+  :properties `(
+                (:name :string, (s-prefix "gr:name"))
+                )
+  :has-many `(
+              (items :via ,(s-prefix "gr:owns") :as "owned-items")
+              )
   :resource-base (s-url "http://localhost/")
-  :on-path "people"
+  :on-path "entities"
   )
+(define-resource item ()
+  :class (s-prefix "gr:Individual")
+  :properties `(
+               (:name :string, (s-prefix "gr:name"))
+               )
+  :has-one `(
+             (entity :via ,(s-prefix "gr:owns")
+                     :inverse t
+                     :as "owner"
+                     )
+             )
+  :resource-base (s-url "http://localhost/")
+  :on-path "items"
+  )
+
 ;;

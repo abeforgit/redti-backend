@@ -33,3 +33,5 @@
 
 (add-prefix "ext" "http://mu.semte.ch/vocabularies/ext/")
 (add-prefix "foaf" "http://xmlns.com/foaf/0.1/")
+(add-prefix "schema" "http://schema.org/")
+(add-prefix "gr" "http://purl.org/goodrelations/v1#")
