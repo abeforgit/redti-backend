@@ -63,30 +63,58 @@
 ;;                        :as "datasets"))
 ;;   :resource-base (s-url "http://webcat.tmp.tenforce.com/themes/")
 ;;   :on-path "themes")
-(define-resource entity ()
-  :class (s-prefix "gr:BusinessEntity")
-  :properties `(
-                (:name :string, (s-prefix "gr:name"))
-                )
-  :has-many `(
-              (items :via ,(s-prefix "gr:owns") :as "owned-items")
-              )
-  :resource-base (s-url "http://localhost/")
-  :on-path "entities"
-  )
 (define-resource item ()
-  :class (s-prefix "gr:Individual")
+  :class (s-prefix "ext:Item")
   :properties `(
-               (:name :string, (s-prefix "gr:name"))
+                (:name :string ,(s-prefix "rdfs:label"))
+                (:description :string ,(s-prefix "rdfs:comment"))
+                (:unit :string ,(s-prefix "ext:unit"))
+                (:quantity :number ,(s-prefix "ext:quantity"))
+                (:container :boolean ,(s-prefix "ext:isContainer"))
                )
   :has-one `(
-             (entity :via ,(s-prefix "gr:owns")
-                     :inverse t
-                     :as "owner"
-                     )
+             (item :via ,(s-prefix "ext:parent") :as "parent")
              )
+  :has-many `(
+              (item :via ,(s-prefix "ext:parent") :inverse t :as "children")
+              (transfer :via ,(s-prefix "schema:object") :inverse t :as "transfers")
+              )
   :resource-base (s-url "http://localhost/")
   :on-path "items"
+  )
+(define-resource transfer ()
+  :class (s-prefix "schema:TransferAction")
+  :properties `((:on :datetime ,(s-prefix "schema:endTime")))
+  :has-one `(
+             (location :via ,(s-prefix "schema:fromLocation") :as "from")
+             (location :via ,(s-prefix "schema:toLocation") :as "to")
+             (item :via ,(s-prefix "schema:object"))
+             )
+  :resource-base (s-url "http://localhost/")
+  :on-path "transfers"
+  )
+(define-resource location ()
+  :class (s-prefix "schema:Place")
+  :properties `(
+                (:name :string ,(s-prefix "rdfs:label"))
+                (:description :string ,(s-prefix "rdfs:comment"))
+                )
+  :has-one `(
+             (address :via ,(s-prefix "schema:address"))
+             )
+  :resource-base (s-url "http://localhost/")
+  :on-path "locations"
+  )
+(define-resource address ()
+  :class (s-prefix "schema:Address")
+  :properties `(
+                (:country :string ,(s-prefix "schema:addressCountry"))
+                (:region :string ,(s-prefix "schema:addressRegion"))
+                (:postal-code :string ,(s-prefix "schema:postalCode"))
+                (:street :string ,(s-prefix "schema:streetAddress"))
+                )
+  :resource-base (s-url "http://localhost/")
+  :on-path "adresses"
   )
 
 ;;
