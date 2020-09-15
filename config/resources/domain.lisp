@@ -1,3 +1,5 @@
+
+
 (in-package :mu-cl-resources)
 
 ;;;;
@@ -74,12 +76,13 @@
                )
   :has-one `(
              (item :via ,(s-prefix "ext:parent") :as "parent")
+             (last-transfer :via ,(s-prefix "ext:lastTransfer"))
              )
   :has-many `(
               (item :via ,(s-prefix "ext:parent") :inverse t :as "children")
               (transfer :via ,(s-prefix "schema:object") :inverse t :as "transfers")
               )
-  :resource-base (s-url "http://localhost/")
+  :resource-base (s-url "http://mu.semte.ch/vocabularies/ext/redti")
   :on-path "items"
   )
 (define-resource transfer ()
@@ -90,7 +93,7 @@
              (location :via ,(s-prefix "schema:toLocation") :as "to")
              (item :via ,(s-prefix "schema:object"))
              )
-  :resource-base (s-url "http://localhost/")
+  :resource-base (s-url "http://mu.semte.ch/vocabularies/ext/redti")
   :on-path "transfers"
   )
 (define-resource location ()
@@ -102,19 +105,27 @@
   :has-one `(
              (address :via ,(s-prefix "schema:address"))
              )
-  :resource-base (s-url "http://localhost/")
+  :has-many `(
+              (transfer :via ,(s-prefix "schema:fromLocation") :inverse t :as "outbox")
+              (transfer :via ,(s-prefix "schema:toLocation") :inverse t :as "inbox")
+              )
+  :resource-base (s-url "http://mu.semte.ch/vocabularies/ext/redti")
   :on-path "locations"
   )
 (define-resource address ()
-  :class (s-prefix "schema:Address")
+  :class (s-prefix "schema:PostalAddress")
   :properties `(
                 (:country :string ,(s-prefix "schema:addressCountry"))
                 (:region :string ,(s-prefix "schema:addressRegion"))
                 (:postal-code :string ,(s-prefix "schema:postalCode"))
+                (:city :string ,(s-prefix "schema:addressLocality"))
                 (:street :string ,(s-prefix "schema:streetAddress"))
                 )
-  :resource-base (s-url "http://localhost/")
-  :on-path "adresses"
+  :has-many `(
+              (location :via ,(s-prefix "schema:address" :inverse t :as "locations"))
+              )
+  :resource-base (s-url "http://mu.semte.ch/vocabularies/ext/redti")
+  :on-path "addresses"
   )
 
 ;;

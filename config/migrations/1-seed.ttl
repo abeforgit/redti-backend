@@ -1,0 +1,35 @@
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix tac: <http://tasks-at-hand.com/vocabularies/core/> .
+@prefix ext: <http://mu.semte.ch/vocabularies/ext/> .
+@prefix rm: <http://mu.semte.ch/vocabularies/logical-delete/> .
+@prefix typedLiterals: <http://mu.semte.ch/vocabularies/typed-literals/> .
+@prefix mu: <http://mu.semte.ch/vocabularies/core/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix app: <http://mu.semte.ch/app/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+
+
+<http://mu.semte.ch/vocabularies/ext/redti/addresses/1>
+    a schema:PostalAddress ;
+    schema:addressCountry "Belgium" ;
+    schema:addressRegion "Antwerpen" ;
+    schema:postalCode "2060" ;
+    mu:uuid "1" ;
+    schema:streetAddress "Bredastraat 17" .
+
+<http://mu.semte.ch/vocabularies/ext/redti/items/1>
+    a ext:Item ;
+    rdfs:label "Dobbelstenen"@nl ;
+    ext:unit "stuks"@nl ;
+    ext:quantity 4 ;
+    ext:isContainer "false" ;
+    ext:parent <http://mu.semte.ch/vocabularies/ext/redti/items/root> ;
+    mu:uuid "2" .
+<http://mu.semte.ch/vocabularies/ext/redti/items/root>
+    a ext:Item ;
+    rdfs:label "rootLabel" ;
+    ext:isContainer "true" ;
+    mu:uuid "root" .

@@ -23,6 +23,12 @@ services:
     volumes:
       - ./data/db:/data
       - ./config/virtuoso/virtuoso.ini:/data/virtuoso.ini
+  migrations:
+    image: semtech/mu-migrations-service
+    links:
+       - db:database
+    volumes:
+       - ./config/migrations:/data/migrations
   resource:
     image: semtech/mu-cl-resources:1.18.0
     links:
