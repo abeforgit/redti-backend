@@ -76,7 +76,7 @@
                )
   :has-one `(
              (item :via ,(s-prefix "ext:parent") :as "parent")
-             (last-transfer :via ,(s-prefix "ext:lastTransfer"))
+             (location :via ,(s-prefix "ext:currentLocation") :as "current-location")
              )
   :has-many `(
               (item :via ,(s-prefix "ext:parent") :inverse t :as "children")
@@ -91,7 +91,7 @@
   :has-one `(
              (location :via ,(s-prefix "schema:fromLocation") :as "from")
              (location :via ,(s-prefix "schema:toLocation") :as "to")
-             (item :via ,(s-prefix "schema:object"))
+             (item :via ,(s-prefix "schema:object") :as "item")
              )
   :resource-base (s-url "http://mu.semte.ch/vocabularies/ext/redti")
   :on-path "transfers"
@@ -101,13 +101,16 @@
   :properties `(
                 (:name :string ,(s-prefix "rdfs:label"))
                 (:description :string ,(s-prefix "rdfs:comment"))
+                (:latitude :number ,(s-prefix "schema:latitude"))
+                (:longitude :number ,(s-prefix "schema:longitude"))
                 )
   :has-one `(
-             (address :via ,(s-prefix "schema:address"))
+             (address :via ,(s-prefix "schema:address") :as "address")
              )
   :has-many `(
               (transfer :via ,(s-prefix "schema:fromLocation") :inverse t :as "outbox")
               (transfer :via ,(s-prefix "schema:toLocation") :inverse t :as "inbox")
+              (item :via ,(s-prefix "ext:currentLocation") :inverse t :as "items")
               )
   :resource-base (s-url "http://mu.semte.ch/vocabularies/ext/redti")
   :on-path "locations"
@@ -122,7 +125,7 @@
                 (:street :string ,(s-prefix "schema:streetAddress"))
                 )
   :has-many `(
-              (location :via ,(s-prefix "schema:address" :inverse t :as "locations"))
+              (location :via ,(s-prefix "schema:address") :inverse t :as "locations")
               )
   :resource-base (s-url "http://mu.semte.ch/vocabularies/ext/redti")
   :on-path "addresses"
