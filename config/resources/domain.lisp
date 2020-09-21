@@ -65,14 +65,63 @@
 ;;                        :as "datasets"))
 ;;   :resource-base (s-url "http://webcat.tmp.tenforce.com/themes/")
 ;;   :on-path "themes")
+
+(define-resource reservation ()
+  :class (s-prefix "schema:ReserveAction")
+  :has-one `(
+             (initiative :via ,(s-prefix "ext:forInitiative") :as "initiative")
+             (item :via ,(s-prefix "schema:object") :as item)
+             )
+  :resource-base (s-url "http://mu.semte.ch/vocabularies/ext/redti")
+  :on-path "reservations"
+  )
+(define-resource dispatch ()
+  :class (s-prefix "schema:SendAction")
+  :properties `(
+             (:quantity :number ,(s-prefix "ext:itemQuantity"))
+                )
+  :has-one `(
+             (initiative :via ,(s-prefix "ext:toInitiative") :as "initiative")
+             (receipt :via ,(s-prefix "schema:result") :as receipt)
+             (item :via ,(s-prefix "schema:object") :as item)
+             )
+  :resource-base (s-url "http://mu.semte.ch/vocabularies/ext/redti")
+  :on-path "dispatches"
+  )
+(define-resource receipt ()
+  :class (s-prefix "schema:ReturnAction")
+  :properties `(
+             (:quantity :number ,(s-prefix "ext:itemQuantity"))
+                )
+
+  :has-one `(
+             (dispatch :via ,(s-prefix "schema:result") :inverse t :as dispatch)
+             )
+  :resource-base (s-url "http://mu.semte.ch/vocabularies/ext/redti")
+  :on-path "receipts"
+  )
+(define-resource initiative ()
+  :class (s-prefix "schema:Event")
+  :properties `(
+                (:name :string ,(s-prefix "rdfs:label"))
+                (:description :string ,(s-prefix "rdfs:comment"))
+                (:start-date :date ,(s-prefix "schema:startDate"))
+                (:end-date :date ,(s-prefix "schema:endDate"))
+                )
+  :has-one `(
+             (address :via ,(s-prefix "schema:location"))
+             )
+  :resource-base (s-url "http://mu.semte.ch/vocabularies/ext/redti")
+  :on-path "initiatives"
+  )
+
 (define-resource item ()
   :class (s-prefix "ext:Item")
   :properties `(
                 (:name :string ,(s-prefix "rdfs:label"))
                 (:description :string ,(s-prefix "rdfs:comment"))
-                (:unit :string ,(s-prefix "ext:unit"))
-                (:quantity :number ,(s-prefix "ext:quantity"))
                 (:container :boolean ,(s-prefix "ext:isContainer"))
+                (:infinite :boolean ,(s-prefix "ext:isInfinite"))
                )
   :has-one `(
              (item :via ,(s-prefix "ext:parent") :as "parent")
@@ -81,6 +130,7 @@
   :has-many `(
               (item :via ,(s-prefix "ext:parent") :inverse t :as "children")
               (transfer :via ,(s-prefix "schema:object") :inverse t :as "transfers")
+              (item-instance :via ,(s-prefix "ext:instanceOf") :as "instances")
               )
   :resource-base (s-url "http://mu.semte.ch/vocabularies/ext/redti")
   :on-path "items"
