@@ -69,25 +69,27 @@
 (define-resource reservation ()
   :class (s-prefix "schema:ReserveAction")
   :has-one `(
-             (initiative :via ,(s-prefix "ext:forInitiative") :as "initiative")
-             (item :via ,(s-prefix "schema:object") :as item)
+             (initiative :via ,(s-prefix "ext:initiative") :as "initiative")
+             (item :via ,(s-prefix "schema:object") :as "item")
              )
   :resource-base (s-url "http://mu.semte.ch/vocabularies/ext/redti")
   :on-path "reservations"
   )
+
 (define-resource dispatch ()
   :class (s-prefix "schema:SendAction")
   :properties `(
              (:quantity :number ,(s-prefix "ext:itemQuantity"))
                 )
   :has-one `(
-             (initiative :via ,(s-prefix "ext:toInitiative") :as "initiative")
-             (receipt :via ,(s-prefix "schema:result") :as receipt)
-             (item :via ,(s-prefix "schema:object") :as item)
+             (initiative :via ,(s-prefix "ext:initiative") :as "initiative")
+             (receipt :via ,(s-prefix "schema:result") :as "receipt")
+             (item :via ,(s-prefix "schema:object") :as "item")
              )
   :resource-base (s-url "http://mu.semte.ch/vocabularies/ext/redti")
   :on-path "dispatches"
   )
+
 (define-resource receipt ()
   :class (s-prefix "schema:ReturnAction")
   :properties `(
@@ -95,11 +97,51 @@
                 )
 
   :has-one `(
-             (dispatch :via ,(s-prefix "schema:result") :inverse t :as dispatch)
+             (dispatch :via ,(s-prefix "schema:result") :inverse t :as "dispatch")
              )
   :resource-base (s-url "http://mu.semte.ch/vocabularies/ext/redti")
   :on-path "receipts"
   )
+
+(define-resource transfer ()
+  :class (s-prefix "schema:TransferAction")
+  :properties `(
+                (:on :datetime ,(s-prefix "schema:endTime"))
+                (:quantity :number ,(s-prefix "ext:itemQuantity"))
+                )
+  :has-one `(
+             (location :via ,(s-prefix "schema:fromLocation") :as "from")
+             (location :via ,(s-prefix "schema:toLocation") :as "to")
+             (item :via ,(s-prefix "schema:object") :as "item")
+             )
+  :resource-base (s-url "http://mu.semte.ch/vocabularies/ext/redti")
+  :on-path "transfers"
+  )
+
+(define-resource item ()
+  :class (s-prefix "ext:Item")
+  :properties `(
+                (:name :string ,(s-prefix "rdfs:label"))
+                (:description :string ,(s-prefix "rdfs:comment"))
+                (:container :boolean ,(s-prefix "ext:isContainer"))
+                (:max-quantity :number ,(s-prefix "ext:itemQuantity"))
+                (:infinite :boolean ,(s-prefix "ext:isInfinite"))
+               )
+  :has-one `(
+             (item :via ,(s-prefix "ext:parent") :as "parent")
+             (location :via ,(s-prefix "ext:warehouse") :as "warehouse")
+             )
+  :has-many `(
+              (item :via ,(s-prefix "ext:parent") :inverse t :as "children")
+              (transfer :via ,(s-prefix "schema:object") :inverse t :as "transfers")
+              (dispatch :via ,(s-prefix "schema:object") :inverse t :as "dispatches")
+              (reservation :via ,(s-prefix "schema:object") :inverse t :as "reservations")
+              )
+  :resource-base (s-url "http://mu.semte.ch/vocabularies/ext/redti")
+  :on-path "items"
+  )
+
+
 (define-resource initiative ()
   :class (s-prefix "schema:Event")
   :properties `(
@@ -109,43 +151,16 @@
                 (:end-date :date ,(s-prefix "schema:endDate"))
                 )
   :has-one `(
-             (address :via ,(s-prefix "schema:location"))
+             (location :via ,(s-prefix "schema:location") :as "location")
              )
+  :has-many `(
+              (reservation :via ,(s-prefix "ext:initiative") :inverse t :as "reservations")
+              (dispatch :via ,(s-prefix "ext:initiative") :inverse t :as "dispatches")
+              )
   :resource-base (s-url "http://mu.semte.ch/vocabularies/ext/redti")
   :on-path "initiatives"
   )
 
-(define-resource item ()
-  :class (s-prefix "ext:Item")
-  :properties `(
-                (:name :string ,(s-prefix "rdfs:label"))
-                (:description :string ,(s-prefix "rdfs:comment"))
-                (:container :boolean ,(s-prefix "ext:isContainer"))
-                (:infinite :boolean ,(s-prefix "ext:isInfinite"))
-               )
-  :has-one `(
-             (item :via ,(s-prefix "ext:parent") :as "parent")
-             (location :via ,(s-prefix "ext:currentLocation") :as "current-location")
-             )
-  :has-many `(
-              (item :via ,(s-prefix "ext:parent") :inverse t :as "children")
-              (transfer :via ,(s-prefix "schema:object") :inverse t :as "transfers")
-              (item-instance :via ,(s-prefix "ext:instanceOf") :as "instances")
-              )
-  :resource-base (s-url "http://mu.semte.ch/vocabularies/ext/redti")
-  :on-path "items"
-  )
-(define-resource transfer ()
-  :class (s-prefix "schema:TransferAction")
-  :properties `((:on :datetime ,(s-prefix "schema:endTime")))
-  :has-one `(
-             (location :via ,(s-prefix "schema:fromLocation") :as "from")
-             (location :via ,(s-prefix "schema:toLocation") :as "to")
-             (item :via ,(s-prefix "schema:object") :as "item")
-             )
-  :resource-base (s-url "http://mu.semte.ch/vocabularies/ext/redti")
-  :on-path "transfers"
-  )
 (define-resource location ()
   :class (s-prefix "schema:Place")
   :properties `(
@@ -160,7 +175,8 @@
   :has-many `(
               (transfer :via ,(s-prefix "schema:fromLocation") :inverse t :as "outbox")
               (transfer :via ,(s-prefix "schema:toLocation") :inverse t :as "inbox")
-              (item :via ,(s-prefix "ext:currentLocation") :inverse t :as "items")
+              (item :via ,(s-prefix "ext:warehouse") :inverse t :as "items")
+              (initiative :via ,(s-prefix "schema:location") :inverse t :as "initiatives")
               )
   :resource-base (s-url "http://mu.semte.ch/vocabularies/ext/redti")
   :on-path "locations"
@@ -174,9 +190,9 @@
                 (:city :string ,(s-prefix "schema:addressLocality"))
                 (:street :string ,(s-prefix "schema:streetAddress"))
                 )
-  :has-many `(
-              (location :via ,(s-prefix "schema:address") :inverse t :as "locations")
-              )
+  :has-one `(
+             (location :via ,(s-prefix "schema:address") :as "location")
+             )
   :resource-base (s-url "http://mu.semte.ch/vocabularies/ext/redti")
   :on-path "addresses"
   )
