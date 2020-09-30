@@ -25,10 +25,10 @@ defmodule Acl.UserGroups.Config do
         access: %AlwaysAccessible{},
         graphs: [
           %GraphSpec{
-            graph: "http://mu.semte.ch/application"
-            # constraint: %ResourceConstraint{
-            #   resource_types: ["http://schema.org/ReserveAction"]
-            # }
+            graph: "http://mu.semte.ch/graphs/public",
+            constraint: %ResourceConstraint{
+              resource_types: ["http://schema.org/ReserveAction"]
+            }
           }
         ]
       }

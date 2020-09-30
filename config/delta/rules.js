@@ -3,17 +3,18 @@ module.exports = [
     match: {
       // form of element is {subject,predicate,object}
       // predicate: { type: "uri", value: "http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#isPartOf" }
-      predicate: {
-        type: "uri",
-        value: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-      },
-      object: {
-        type: "uri",
-        value: "https://schema.org/ReserveAction",
-      },
+      // predicate: {
+      //   type: "uri",
+      //   value: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+      // },
+      // object: {
+      //   type: "uri",
+      //   value: "http://schema.org/ReserveAction",
+      // },
+      subject: {},
     },
     callback: {
-      url: "http://resource/.mu/delta",
+      url: "http://reservations:8000/delta",
       method: "POST",
     },
     options: {

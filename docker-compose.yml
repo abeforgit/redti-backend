@@ -33,21 +33,19 @@ services:
   resource:
     image: semtech/mu-cl-resources:1.18.0
     links:
-      - db:database
+      - authorization:database
     volumes:
       - ./config/resources:/config
     labels:
       - "logging"
   authorization:
     image: semtech/mu-authorization
-    links:
-      - db:database
-      - deltanotifier:deltanotifier
     volumes:
       - ./config/authorization:/config
     environment:
       LOG_DELTA_CLIENT_COMMUNICATION: "true"
       LOG_DELTA_MESSAGES: "true"
+      MU_SPARQL_ENDPOINT: "http://db:8890/sparql"
   deltanotifier:
     image: semtech/mu-delta-notifier
     volumes:
@@ -56,3 +54,10 @@ services:
       LOG_SERVER_CONFIGURATION: "true"
       DEBUG_DELTA_SEND: "true"
       DEBUG_DELTA_MATCH: "true"
+
+  # this is just a placeholder for during development of the reservations service
+  reservations:
+    image: qoomon/docker-host
+    cap_add: ["NET_ADMIN", "NET_RAW"]
+    mem_limit: 8M
+    restart: on-failure
