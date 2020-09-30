@@ -17,4 +17,19 @@
     rdfs:label "rootLabel" ;
     ext:isContainer "true" ;
     mu:uuid "root" .
+<http://mu.semte.ch/vocabularies/ext/redti/items/1>
+    a ext:Item ;
+    rdfs:label "testitem" ;
+    ext:isContainer "true" ;
+    mu:uuid 1 .
+<http://mu.semte.ch/vocabularies/ext/redti/initiatives/1>
+    a schema:Event ;
+    rdfs:label "testInitiative" ;
+    rdfs:comment "some test initiative" ;
+    mu:uuid 2 .
 
+<http://mu.semte.ch/vocabularies/ext/redti/reservations/1>
+    a schema:ReserveAction ;
+    ext:initiative <http://mu.semte.ch/vocabularies/ext/redti/initiatives/1> ;
+    schema:object <http://mu.semte.ch/vocabularies/ext/redti/items/1> ;
+    mu:uuid 3 .
