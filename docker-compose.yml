@@ -45,6 +45,9 @@ services:
       - deltanotifier:deltanotifier
     volumes:
       - ./config/authorization:/config
+    environment:
+      LOG_DELTA_CLIENT_COMMUNICATION: "true"
+      LOG_DELTA_MESSAGES: "true"
   deltanotifier:
     image: semtech/mu-delta-notifier
     volumes:
