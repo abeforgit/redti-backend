@@ -1,4 +1,4 @@
-version: '3.4'
+version: "3.4"
 
 services:
   identifier:
@@ -27,9 +27,9 @@ services:
   migrations:
     image: semtech/mu-migrations-service
     links:
-       - db:database
+      - db:database
     volumes:
-       - ./config/migrations:/data/migrations
+      - ./config/migrations:/data/migrations
   resource:
     image: semtech/mu-cl-resources:1.18.0
     links:
@@ -38,3 +38,18 @@ services:
       - ./config/resources:/config
     labels:
       - "logging"
+  authorization:
+    image: semtech/mu-authorization
+    links:
+      - db:database
+      - deltanotifier:deltanotifier
+    volumes:
+      - ./config/authorization:/config
+  deltanotifier:
+    image: semtech/mu-delta-notifier
+    volumes:
+      - ./config/delta:/config
+    environment:
+      LOG_SERVER_CONFIGURATION: "true"
+      DEBUG_DELTA_SEND: "true"
+      DEBUG_DELTA_MATCH: "true"
