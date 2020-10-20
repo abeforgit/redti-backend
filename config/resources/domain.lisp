@@ -66,8 +66,15 @@
 ;;   :resource-base (s-url "http://webcat.tmp.tenforce.com/themes/")
 ;;   :on-path "themes")
 
+
+;; This is not the *nicest* solution, but it will work for the purposes of Redti
+(defparameter *default-page-size* 10000000)
+
 (define-resource reservation ()
-  :class (s-prefix "schema:ReserveAction")
+  :class (s-prefix "schema:Reservation")
+  :properties `(
+                (quantity :number ,(s-prefix "ext:quantity"))
+               )
   :has-one `(
              (initiative :via ,(s-prefix "ext:initiative") :as "initiative")
              (item :via ,(s-prefix "schema:object") :as "item")
@@ -130,6 +137,7 @@
   :has-one `(
              (item :via ,(s-prefix "ext:parent") :as "parent")
              (location :via ,(s-prefix "ext:warehouse") :as "warehouse")
+	     (category :via ,(s-prefix "schema:category") :as "category")
              )
   :has-many `(
               (item :via ,(s-prefix "ext:parent") :inverse t :as "children")
@@ -195,6 +203,18 @@
              )
   :resource-base (s-url "http://mu.semte.ch/vocabularies/ext/redti")
   :on-path "addresses"
+  )
+
+(define-resource category ()
+  :class (s-prefix "ext:Category")
+  :properties `(
+		(:name :string ,(s-prefix "rdfs:label"))
+	        )
+  :has-many `(
+              (item :via ,(s-prefix "schema:category") :inverse t :as "items")
+	      )
+  :resource-base (s-url "http://mu.semte.ch/vocabularies/ext/redti")
+  :on-path "categories"
   )
 
 ;;
